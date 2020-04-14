@@ -6,7 +6,7 @@ The C main function
 
 So, [here it is](https://github.com/qemu/qemu/blob/17e1e49814096a3daaa8e5a73acd56a0f30bdc18/softmmu/main.c), the function that bootstraps every C program:
 
-```
+```C
 #include "qemu/osdep.h"
 #include "qemu-common.h"
 #include "sysemu/sysemu.h"
