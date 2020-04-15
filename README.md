@@ -1,2 +1,2 @@
 # virtualization-insides
-Insides of virtualization codes (Qemu, KVM and Xen)
+Insides of virtualization software (Qemu, KVM and Xen)
