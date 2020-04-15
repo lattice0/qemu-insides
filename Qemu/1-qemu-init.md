@@ -4,7 +4,7 @@ Qemu main function - part 1
 The C main function
 --------------------------------------------------------------------------------
 
-So, [here it is](https://github.com/qemu/qemu/blob/17e1e49814096a3daaa8e5a73acd56a0f30bdc18/softmmu/main.c), the function that bootstraps every C program:
+So, at [softmmu/main.c](https://github.com/qemu/qemu/blob/stable-4.1/softmmu/main.c), we find the function that bootstraps every C program:
 
 ```C
 #include "qemu/osdep.h"
