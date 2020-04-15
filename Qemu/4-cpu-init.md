@@ -7,6 +7,8 @@ Something
 
 Q35 CPU
 --------------------------------------------------------------------------------
+On [hw/i386/pc_q35.c](https://github.com/qemu/qemu/blob/17e1e49814096a3daaa8e5a73acd56a0f30bdc18/hw/i386/pc_q35.c#L115), you´ find the `pc_q35_init` function, which initializes a LOT of devices for us:
+
 ```C
 static void pc_q35_init(MachineState *machine)
 {
