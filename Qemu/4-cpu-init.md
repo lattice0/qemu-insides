@@ -4,6 +4,80 @@ CPU/Machine init - part 4
 Something
 --------------------------------------------------------------------------------
 
+QEMU has two main machines: Q35 and i440fx. On the main function, there's the line [vl.c/#3857]() where it selects the main machine:
+```C
+machine_class = select_machine();
+```
+
+so lets see, in the same file [vl.c/#2568](), what it does:
+
+```C
+static MachineClass *select_machine(void)
+{
+    GSList *machines = object_class_get_list(TYPE_MACHINE, false);
+    MachineClass *machine_class = find_default_machine(machines);
+    const char *optarg;
+    QemuOpts *opts;
+    Location loc;
+
+    loc_push_none(&loc);
+
+    opts = qemu_get_machine_opts();
+    qemu_opts_loc_restore(opts);
+
+    optarg = qemu_opt_get(opts, "type");
+    if (optarg) {
+        machine_class = machine_parse(optarg, machines);
+    }
+
+    if (!machine_class) {
+        error_report("No machine specified, and there is no default");
+        error_printf("Use -machine help to list supported machines\n");
+        exit(1);
+    }
+
+    loc_pop(&loc);
+    g_slist_free(machines);
+    return machine_class;
+}
+```
+It reads the option "type" from the command "machine". If no machine is specified, it uses the default one from `find_default_machine(machines)`, where `machines` is a glist (an array implementation from Glib).
+
+Then the instantiation occurs here:
+
+```C
+current_machine = MACHINE(object_new(object_class_get_name(
+                          OBJECT_CLASS(machine_class))));
+```
+
+Let's expand those macros:
+
+```C
+OBJECT_CHECK(MachineState, (object_new(object_class_get_name( ((ObjectClass *)(machine_class))))), TYPE_MACHINE)
+```
+
+The `machine_class` object is converted to its `ObjectClass` (the class that all classes derive from). Then `object_class_get_name` accesses its type:
+
+```C
+const char *object_class_get_name(ObjectClass *klass)
+{
+    return klass->type->name;
+}
+```
+Turns out that every `ObjectClass` has a Type (`typedef struct TypeImpl *Type`), where `TypeImpl` is:
+
+```C
+struct TypeImpl
+{
+    const char *name;
+    //...
+```
+
+So, given the name of the class, now `Object *object_new(const char *typename);` creates an object from it, and the `MACHINE` macro casts it to the `MachineState` type by doing `OBJECT_CHECK`:
+
+```C
+#define OBJECT_CHECK(type,obj,name) ((type *)object_dynamic_cast_assert(OBJECT(obj), (name), __FILE__, __LINE__, __func__))
+```
 
 Q35 CPU
 --------------------------------------------------------------------------------
