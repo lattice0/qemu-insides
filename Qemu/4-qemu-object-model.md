@@ -1,4 +1,4 @@
-Qemu OOP in C - part 3
+Qemu Object Model - part 3
 ================================================================================
 
 How Object Oriented Programming language concepts are implemented in C on Qemu project

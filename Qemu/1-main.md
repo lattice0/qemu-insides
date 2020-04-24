@@ -12,9 +12,28 @@ int main(int argc, char **argv, char **envp)
     //...
 ```
 
-Unfortunately it's too big to post here. 
+Unfortunately it's too big to post here, we're going to analyze it in parts. The bigger part of the main function is to parse and store the command line options, as this snippet shows:
 
-...
+```C
+    case QEMU_OPTION_enable_kvm:
+        olist = qemu_find_opts("machine");
+        qemu_opts_parse_noisily(olist, "accel=kvm", false);
+        break;
+    case QEMU_OPTION_M:
+    case QEMU_OPTION_machine:
+        olist = qemu_find_opts("machine");
+        opts = qemu_opts_parse_noisily(olist, optarg, true);
+        if (!opts) {
+            exit(1);
+        }
+        break;
+        case QEMU_OPTION_no_kvm:
+        olist = qemu_find_opts("machine");
+        qemu_opts_parse_noisily(olist, "accel=tcg", false);
+        break;
+```
+After that, some init functions for other things are called, we're gonna deal with them later.
+
 
 Let's dive into the more important part, which is the main loop `main_loop()` found in this [line](https://github.com/qemu/qemu/blob/stable-4.1/vl.c#L4473), which is defined in the same file and only does this:
 
@@ -79,4 +98,4 @@ void main_loop_wait(int nonblocking)
 }
 ```
 
-Qemu runs all of this in a loop forever. So now we should check the [Main Loop]() section.
+Qemu runs all of this in a loop forever. Now that you have an overview of the qemu event loop, we can start explaining the qemu init process in details.
