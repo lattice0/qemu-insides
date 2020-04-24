@@ -4,7 +4,9 @@ Insides of the Qemu software, version 4.1 (stable), at [https://github.com/qemu/
 # Donations
 
 Bitcoin: 182ZMwHHYg8X6f345675pCroVod2tMaGmH
+
 Ethereum: 0x94503E5a4de04575732606eeE2Dd6D404FF1c9e9
+
 Paypal: eu@lucaszanella.com
 
 # How to read
