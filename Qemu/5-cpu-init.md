@@ -217,3 +217,94 @@ static void pc_q35_init(MachineState *machine)
     }
 }
 ```
+This function is very important, as it initializes a machine for the x86 architecture. We're gonna understand its pieces one by one. 
+
+Let's start with `PCMachineState` and `PCMachineClass`. We already seen those before: `PCMachineClass` is a subclass of `MachineClass`, so it extends its functions. `PCMachineState` is the state of this class, as we already seen before.
+
+On [include/hw/i386/pc.h#L29](https://github.com/qemu/qemu/blob/stable-4.1/include/hw/i386/pc.h#L29), we can see the declaration of `PCMachineState`:
+
+```C
+struct PCMachineState {
+    /*< private >*/
+    MachineState parent_obj;
+
+    /* <public> */
+
+    /* State for other subsystems/APIs: */
+    Notifier machine_done;
+
+    /* Pointers to devices and objects: */
+    HotplugHandler *acpi_dev;
+    ISADevice *rtc;
+    PCIBus *bus;
+    FWCfgState *fw_cfg;
+    qemu_irq *gsi;
+    PFlashCFI01 *flash[2];
+
+    /* Configuration options: */
+    uint64_t max_ram_below_4g;
+    OnOffAuto vmport;
+    OnOffAuto smm;
+
+    bool acpi_build_enabled;
+    bool smbus_enabled;
+    bool sata_enabled;
+    bool pit_enabled;
+
+    /* RAM information (sizes, addresses, configuration): */
+    ram_addr_t below_4g_mem_size, above_4g_mem_size;
+
+    /* CPU and apic information: */
+    bool apic_xrupt_override;
+    unsigned apic_id_limit;
+    uint16_t boot_cpus;
+    unsigned smp_dies;
+
+    /* NUMA information: */
+    uint64_t numa_nodes;
+    uint64_t *node_mem;
+
+    /* Address space used by IOAPIC device. All IOAPIC interrupts
+     * will be translated to MSI messages in the address space. */
+    AddressSpace *ioapic_as;
+};
+```
+
+`MachineState` is its parent. I'll give a brief description on some important structures that we'll later review in detail:
+
+
+`HotplugHandler *acpi_dev`: link to ACPI PM device that performs ACPI hotplug handling. If we look at the [include/hw/hotplug.h](https://github.com/qemu/qemu/blob/stable-4.1/include/hw/hotplug.h#L26) file for this, we find its struct and class definitions, with methods of type `hotplug_fn` which handle hotplugging of devices. 
+But what's ACPI? 
+
+"[ACPI](https://en.wikipedia.org/wiki/Advanced_Configuration_and_Power_Interface), or Advanced Configuration and Power Interface (ACPI), provides an open standard that operating systems can use to discover and configure computer hardware components, to perform power management by (for example) putting unused components to sleep, and to perform status monitoring."
+
+"Internally, ACPI advertises the available components and their functions to the operating system kernel using instruction lists ("methods") provided through the system firmware (Unified Extensible Firmware Interface (UEFI) or BIOS), which the kernel parses. ACPI then executes the desired operations written in ACPI Machine Language (such as the initialization of hardware components) using an embedded minimal virtual machine."
+
+Turns out most of the information about your computer will be gathered on boot time through ACPI, but it looks like it also supports hot plugging of PCI devices, which can also provide ACPI information. I couldn't find much about it online so I'm not really sure.
+
+`ISADevice* rtc`: I think it stands for the old [ISA BUS](https://en.wikipedia.org/wiki/Industry_Standard_Architecture).
+
+`PCIBus *bus`: of course, PCI bus, which is important and we'll probably handle later. 
+
+`FWCfgState *fw_cfg`: looks like something related to NVRAM (Non-Volatile Random Access Memory), where `fw_cfg` stands for "firmware configuration". 
+
+`qemu_irq *gsi`: just a pointer to IRQState: `typedef struct IRQState *qemu_irq`, which holds an `qemu_irq_handler`, which is the function pointer `typedef void (*qemu_irq_handler)(void *opaque, int n, int level)`. Interrupts are central in understanding CPUs. I'm not sure right now how this handler works but we'll probably understand it in the future.
+
+`PFlashCFI01 *flash[2]`: on its .h file it says `NOR flash devices`.
+
+`uint64_t max_ram_below_4g`: this variable is explained in the `pc_q35_init` function that this article intends to analyze. We're gonna see it later but this is a variable setted by the option `max-ram-below-4g` passed to qemu on startup.
+
+`bool smbus_enabled`: "The System Management Bus (abbreviated to SMBus or SMB) is a single-ended simple two-wire bus for the purpose of lightweight communication. Most commonly it is found in computer motherboards for communication with the power source for ON/OFF instructions."
+
+`ram_addr_t below_4g_mem_size, above_4g_mem_size`: just `typedef uint64_t ram_addr_t` in case `XEN_BACKEND` is configured or `typedef uintptr_t ram_addr_t` otherwise. The variables 
+`below_4g_mem_size` and `above_4g_mem_size` are explained also in the `pc_q35_init` but they split the RAM in 2 parts.
+
+
+`uint64_t numa_nodes`: TBD
+
+`uint64_t *node_mem`: TBD
+
+`AddressSpace *ioapic_as`: Address space used by IOAPIC device. What's IOAPIC? "The Intel I/O Advanced Programmable Interrupt Controller is used to distribute external interrupts in a more advanced manner than that of the standard 8259 PIC. With the I/O APIC, interrupts can be distributed to physical or logical (clusters of) processors and can be prioritized. Each I/O APIC typically handles 24 external interrupts."
+
+The class `PCMachineClass` doesn't have custom data structures, only `int`s and `bool`s.
+
