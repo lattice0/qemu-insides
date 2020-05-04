@@ -1,4 +1,4 @@
-CPU/Machine init - part 4
+CPU/Machine init - part 5
 ================================================================================
 
 Something
@@ -306,5 +306,5 @@ Turns out most of the information about your computer will be gathered on boot t
 
 `AddressSpace *ioapic_as`: Address space used by IOAPIC device. What's IOAPIC? "The Intel I/O Advanced Programmable Interrupt Controller is used to distribute external interrupts in a more advanced manner than that of the standard 8259 PIC. With the I/O APIC, interrupts can be distributed to physical or logical (clusters of) processors and can be prioritized. Each I/O APIC typically handles 24 external interrupts."
 
-The class `PCMachineClass` doesn't have custom data structures, only `int`s and `bool`s.
+The class `PCMachineClass` almost doesn't have custom data structures, only `int`s and `bool`s.
 

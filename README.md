@@ -1,6 +1,8 @@
 # Qemu Insides
 Insides of the Qemu software, version 4.1 (stable), at [https://github.com/qemu/qemu/tree/stable-4.1](https://github.com/qemu/qemu/tree/stable-4.1). This repo is inspired by [0xAX/linux-insides](https://github.com/0xAX/linux-insides) which gave me a really good introduction to the Linux Kernel. I'm also intersted in other virtualization techniques (that are related to Qemu) like Xen and KVM. Consider making me a donation and starring this repo so I have the strength to make new repos explaining their insides too :).
 
+I am learning while I write this, so yes, some of the things will be left to be explained later or not explained in grand detail until later.
+
 # Donations
 
 Bitcoin: 182ZMwHHYg8X6f345675pCroVod2tMaGmH
